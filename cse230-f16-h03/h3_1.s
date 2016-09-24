@@ -22,11 +22,11 @@
 # of the .eqv directive.
 .eqv SYS_EXIT         10   # SysExit()
 .eqv SYS_PRINT_CHAR   11   # SysPrintChar()
-.eqv SYS_PRINT_INT    ??   # SysPrintInt()
-.eqv SYS_PRINT_STR    ??   # SysPrintStr()
-.eqv SYS_READ_CHAR    ??   # SysReadChar()
-.eqv SYS_READ_INT     ??   # SysReadInt()
-.eqv SYS_READ_STR     ??   # SysReadStr()
+.eqv SYS_PRINT_INT    1    # SysPrintInt()
+.eqv SYS_PRINT_STR    4    # SysPrintStr()
+.eqv SYS_READ_CHAR    12   # SysReadChar()
+.eqv SYS_READ_INT     5    # SysReadInt()
+.eqv SYS_READ_STR     8    # SysReadStr()
 
 #=======================================================================================================
 # DATA SECTION
@@ -50,7 +50,7 @@ sum:            .word     0   # int sum;
 diff:           .word     0   # int diff;
 product:        .word     0   # int product;
 quotient:       .word     0   # int quotient;
-modulus:        .modulus  0   # int modulus;
+modulus:        .word     0   # int modulus;
 
 #=======================================================================================================
 # TEXT SECTION
@@ -98,13 +98,13 @@ main:
     sw      $v0, 0($t1)                     # b = SysReadInt()
 
 # sum = a + b
-    ???                                     # $t0 = &a (hint: LA)
-    ???                                     # $t0 = a (hint: LW)
-    ???                                     # $t1 = &b (hint: LA)
-    ???                                     # $t1 = b (hint: LW)
-    ???                                     # $t2 = a + b (hint: ADD)
-    ???                                     # $t3 = &sum (hint: LA)
-    ???                                     # sum = a + b (hint: SW)
+    la $t0, a                               # $t0 = &a (hint: LA)
+    lw $t0, 0($t0)                          # $t0 = a (hint: LW)
+    la $t1, b                               # $t1 = &b (hint: LA)
+    lw $t1, 0($t1)                          # $t1 = b (hint: LW)
+    add $t2, $t0, $t1                       # $t2 = a + b (hint: ADD)
+    la $t3, sum                             # $t3 = &sum (hint: LA)
+    sw $t2, 0($t3)                          # sum = a + b (hint: SW)
     
 # diff = a - b                              # Note that a and b are still in $t0 and $t1
     ???                                     # $t2 = a - b
