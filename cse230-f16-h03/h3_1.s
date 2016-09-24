@@ -10,8 +10,8 @@
 # the remainder from dividing a by b.
 #
 # AUTHOR INFO
-# <Your-Name> (<Your-Email-Address>)
-# <Your-Partners-Name> (<Your-Partners-Email-Address>)
+# Mohseen Mukaddam ( mohseen@asu.edu )
+# Vishnu (<Your-Partners-Email-Address>)
 #*******************************************************************************************************
 
 #=======================================================================================================
