@@ -107,25 +107,25 @@ main:
     sw $t2, 0($t3)                          # sum = a + b (hint: SW)
     
 # diff = a - b                              # Note that a and b are still in $t0 and $t1
-    ???                                     # $t2 = a - b
-    ???                                     # $t3 = &diff
-    ???                                     # diff = a - b
+    sub $t2, $t0, $t1                        # $t2 = a - b
+    la $t3, diff                            # $t3 = &diff
+    sw $t2, 0($t3)                          # diff = a - b
     
 # product = a * b                           # Note that a and b are still in $t0 and $t1
-    ???                                     # $t2 = a * b (hint: use MUL)
-    ???                                     # $t3 = &product
-    ???                                     # product = a * b
+    mul $t2, $t0, $t1                       # $t2 = a * b (hint: use MUL)
+    la $t3, product                         # $t3 = &product
+    sw $t2, 0($t3)                          # product = a * b
     
 # quotient = a / b                          # Note that a and b are still in $t0 and $t1
-    ???                                     # LO = a / b
-    ???                                     # $t2 = a / b (hint: move the value from LO to $t2)
-    ???                                     # $t3 = &quotient
-    ???                                     # quotient = a / b
+    div $t0, $t1                            # LO = a / b
+    mflo $t2                                # $t2 = a / b (hint: move the value from LO to $t2)
+    la $t3, quotient                        # $t3 = &quotient
+    sw $t2, 0($t3)                          # quotient = a / b
     
 # modulus = a % b                           # Note that a and b are still in $t0 and $t1
-    ???                                     # $t2 = a % b (hint: a % b is still in HI from the previous DIV)
-    ???                                     # $t3 = &modulus 
-    ???                                     # modulus = a % b
+    mfhi $t2                                # $t2 = a % b (hint: a % b is still in HI from the previous DIV)
+    la $t3, modulus                         # $t3 = &modulus 
+    sw $t2, 0($t3)                          # modulus = a % b
     
 # SysPrintStr("a + b = ")
     addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
@@ -144,69 +144,69 @@ main:
     syscall                                 # SysPrintChar('\n')
     
 # SysPrintStr("a - b = ")
-    ???                                     # $v0 = SysPrintStr service code
-    ???                                     # $a0 = &out_diff
-    ???                                     # SysPrintStr(out_diff)
+    addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
+    la      $a0, out_diff                   # $a0 = &out_diff
+    syscall                                 # SysPrintStr(out_diff)
 
 # SysPrintInt(diff)
-    ???                                     # $v0 = SysPrintInt service code
-    ???                                     # $t0 = &diff
-    ???                                     # $a0 = diff
-    ???                                     # SysPrintInt(diff)
+    addi    $v0, $zero, SYS_PRINT_INT       # $v0 = SysPrintInt service code
+    la      $t0, diff                       # $t0 = &diff
+    lw      $a0, 0($t0)                     # $a0 = diff
+    syscall                                 # SysPrintInt(diff)
 
 # SysPrintChar('\n')
-    ???                                     # $v0 = SysPrintChar service code
-    ???                                     # $a0 = '\n'
-    ???                                     # SysPrintChar('\n')
+    addi    $v0, $zero, SYS_PRINT_CHAR      # $v0 = SysPrintChar service code
+    addi    $a0, $zero, '\n'                # $a0 = '\n'
+    syscall                                 # SysPrintChar('\n')
     
 # SysPrintStr("a * b = ")
-    ???                                     # $v0 = SysPrintStr service code
-    ???                                     # $a0 = &out_dproduct
-    ???                                     # SysPrintStr(out_product) 
-    ???                                     # $v0 = SysPrintInt service code
+    addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
+    la      $a0, out_product                # $a0 = &out_dproduct
+    syscall                                 # SysPrintStr(out_product) 
+    addi    $v0, $zero, SYS_PRINT_INT       # $v0 = SysPrintInt service code
     
 # SysPrintInt(product)
-    ???                                     # $t0 = &product
-    ???                                     # $a0 = product
-    ???                                     # SysPrintInt(product)
+    la      $t0, product                    # $t0 = &product
+    lw      $a0, 0($t0)                     # $a0 = product
+    syscall                                 # SysPrintInt(product)
 
 # SysPrintChar('\n')
-    ???                                     # $v0 = SysPrintChar service code
-    ???                                     # $a0 = '\n'
-    ???                                     # SysPrintChar('\n')
+    addi    $v0, $zero, SYS_PRINT_CHAR      # $v0 = SysPrintChar service code
+    addi    $a0, $zero, '\n'                # $a0 = '\n'
+    syscall                                 # SysPrintChar('\n')
     
 # SysPrintStr("a / b = ")
-    ???                                     # $v0 = SysPrintStr service code
-    ???                                     # $a0 = &out_quotient
-    ???                                     # SysPrintStr(out_quotient)
-    ???                                     # $v0 = SysPrintInt service code
+    addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
+    la      $a0, out_quotient               # $a0 = &out_quotient
+    syscall                                 # SysPrintStr(out_quotient)
+    addi    $v0, $zero, SYS_PRINT_INT       # $v0 = SysPrintInt service code
 
 # SysPrintInt(quotient)
-    ???                                     # $t0 = &quotient
-    ???                                     # $a0 = quotient
-    ???                                     # SysPrintInt(quotient)
+    la      $t0, quotient                   # $t0 = &quotient
+    lw      $a0, 0($t0)                     # $a0 = quotient
+    syscall                                 # SysPrintInt(quotient)
 
 # SysPrintChar('\n')
-    ???                                     # $v0 = SysPrintChar service code
-    ???                                     # $a0 = '\n'
-    ???                                     # SysPrintChar('\n')
+    addi    $v0, $zero, SYS_PRINT_CHAR      # $v0 = SysPrintChar service code
+    addi    $a0, $zero, '\n'                # $a0 = '\n'
+    syscall                                 # SysPrintChar('\n')
     
 # SysPrintStr("a % b = ")
-    ???                                     # $v0 = SysPrintStr service code
-    ???                                     # $a0 = &out_modulus
-    ???                                     # SysPrintStr(out_modulus)
+    addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
+    la      $a0, out_modulus                # $a0 = &out_modulus
+    syscall                                 # SysPrintStr(out_modulus)
     
 # SysPrintInt(modulus)    
-    ???                                     # $v0 = SysPrintInt service code
-    ???                                     # $t0 = &modulus 
-    ???                                     # $a0 = modulus
-    ???                                     # SysPrintInt(modulus)
+    addi    $v0, $zero, SYS_PRINT_INT       # $v0 = SysPrintInt service code
+    la      $t0, modulus                    # $t0 = &modulus 
+    lw      $a0, 0($t0)                     # $a0 = modulus
+    syscall                                 # SysPrintInt(modulus)
 
 # SysPrintChar('\n')
-    ???                                     # $v0 = SysPrintChar service code
-    ???                                     # $a0 = '\n'
-    ???                                     # SysPrintChar('\n')
+    addi    $v0, $zero, SYS_PRINT_CHAR      # $v0 = SysPrintChar service code
+    addi    $a0, $zero, '\n'                # $a0 = '\n'
+    syscall                                 # SysPrintChar('\n')
 
 # SysExit()
-    ???                                     # $v0 = SysExit service code
-    ???                                     # SysExit()
+    addi    $v0, $zero, SYS_EXIT            # $v0 = SysExit service code
+    syscall                                 # SysExit()
