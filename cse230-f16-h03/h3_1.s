@@ -31,31 +31,32 @@
 #=======================================================================================================
 # DATA SECTION
 #=======================================================================================================
-??? What goes here ???
+#??? What goes here ???
+.data
 
 # Define string literals.
 prompt_a:       .asciiz   "Enter a? "
 prompt_b:       .asciiz   "Enter b (not zero)? "
 out_sum:        .asciiz   "a + b = "
-out_diff:       ???
-out_product:    ???
-out_quotient:   ???
-out_modulus:    ???
+out_diff:       .asciiz   "a - b = "
+out_product:    .asciiz   "a * b = "
+out_quotient:   .asciiz   "a / b = "
+out_modulus:    .asciiz   "a % b = "
 
 # Define int global variables, all initialized to 0.
 a:              .word     0   # int a;
 b:              .word     0   # int b;
-sum:            ???
-diff:           ???
-product:        ???
-quotient:       ???
-modulus:        ???
+sum:            .word     0   # int sum;
+diff:           .word     0   # int diff;
+product:        .word     0   # int product;
+quotient:       .word     0   # int quotient;
+modulus:        .modulus  0   # int modulus;
 
 #=======================================================================================================
 # TEXT SECTION
 #=======================================================================================================
-??? What goes here ???
-
+#??? What goes here ???
+.text
 #-------------------------------------------------------------------------------------------------------
 # main()
 #
@@ -86,10 +87,15 @@ main:
     sw      $v0, 0($t0)                     # a = SysReadInt()
     
 # SysPrintStr("Enter b? ")
-    ???
+    addi    $v0, $zero, SYS_PRINT_STR       # $v0 = SysPrintStr service code
+    la      $a0, prompt_b                   # $a0 = &prompt_b
+    syscall                                 # SysPrintStr(prompt_b)
 
 # b = SysReadInt()
-    ???
+    addi    $v0, $zero, SYS_READ_INT        # $v0 = SysReadInt service code
+    syscall                                 # $v0 = the integer that was entered
+    la      $t1, b                          # $t1 = &b
+    sw      $v0, 0($t1)                     # b = SysReadInt()
 
 # sum = a + b
     ???                                     # $t0 = &a (hint: LA)
