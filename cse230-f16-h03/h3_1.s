@@ -2,7 +2,7 @@
 # FILE: h3_1.s
 #
 # CSE/EEE 230 Comp. Org. and Assemb. Lang. Program. Fall 2016 - Homework 3, Exercise 1.
-# SECTION: <Enter your section, either: MWF 10:45 or MWF 2:00-2:50>
+# SECTION: MWF 2:00-2:50
 #
 # DESCRIPTION
 # The program prompts for and reads two integers a and b. It then calculates and displays the sum of a
