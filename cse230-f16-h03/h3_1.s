@@ -2,7 +2,7 @@
 # FILE: h3_1.s
 #
 # CSE/EEE 230 Comp. Org. and Assemb. Lang. Program. Fall 2016 - Homework 3, Exercise 1.
-# SECTION: MWF 2:00-2:50
+# SECTION: MWF 2:00-2:50 and 10:45-11:35
 #
 # DESCRIPTION
 # The program prompts for and reads two integers a and b. It then calculates and displays the sum of a
@@ -10,8 +10,8 @@
 # the remainder from dividing a by b.
 #
 # AUTHOR INFO
-# Mohseen Mukaddam ( mohseen@asu.edu )
-# Vishnu (vnnarang@asu.edu)
+# Mohseen Mukaddam ( mohseen@asu.edu ) MWF 10:45-11:35
+# Vishnu (vnnarang@asu.edu) MWF 2:00-2:50
 #*******************************************************************************************************
 
 #=======================================================================================================
