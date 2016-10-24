@@ -8,8 +8,8 @@
 # Tests the student's strlen() function.
 #
 # AUTHOR INFO
-# type-your-name (type-your-email-address)
-# type-your-partners-name (type-your-email-address)
+# Mohseen Mukaddam ( mohseen@asu.edu )
+# Vishnu Narang ( vnnarang@asu.edu )
 #*******************************************************************************************************
 
 #=======================================================================================================
