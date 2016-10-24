@@ -164,4 +164,32 @@ main:
 #   end_loop:
 #     return index
 #-------------------------------------------------------------------------------------------------------
-??? COPY-AND-PASTE YOUR CODE FOR STRLEN() HERE ???
+# int strlen(string sample)
+strlen:
+# int len, char string[BUF_LEN]
+    addi    $sp, $sp, -8                 # Allocate local vars in stack frame
+    
+    addi    $t0, $zero, 0		 # int index = 0
+    add     $t1, $zero, $a0		 # string (a0) -> $t1
+    sw      $t0, 0($sp)			 # $sp[0:3] = index
+    addi    $t5, $zero, '\0'		 # $t5 = ASCII value of '\0'
+begin_loop:
+    # if(string[index] != '\0')
+    lw      $t0, 0($sp)			 # $t0 = index (read from local stack) 
+    add     $t2, $t0, $t1		 # $t2 -> &string + index
+    lb      $t3, 0($t2)			 # $t3 -> string[index]
+    beq     $t3, $t5, end_loop
+    #index++
+    addi    $t0, $t0, 1			 # index++
+    #store index
+    sw      $t0, 0($sp)			 # saving index to local stack
+    #jump to begin_loop
+    j       begin_loop			 # jump to start of loop
+end_loop:
+    addi    $t0, $t0, -1    		 # to offset the '\n' from user input
+    add     $v0, $zero, $t0		 # setting up the reurn registers 
+    # Deallocate stack frame
+    addi    $sp, $sp, 8                  # Deallocate stack frame
+    # Return back to calling function
+    jr      $ra
+    
