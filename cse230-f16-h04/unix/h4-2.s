@@ -445,9 +445,9 @@ end_loop:
 # ??? WRITE THE CODE FOR WRITE_GRID() HERE ???
 write_grid:
     addi    $sp, $sp, -16                # Allocate 3 words in stack frame
-    sw 		$ra, 12($sp)
+    sw 		$ra, 12($sp)				# Store $ra value in stack so that we can call strlen inside without losing return address.
     # a1 has string and a0 has grid address
-    jal strlen
+    jal strlen		# Find the length of the string entered.
     sw      $v0, 0($sp)		# get length of string intp stack
     lw 		$t3, 0($sp)		# load length into t3 from $v0	
     sw      $zero, 0($sp)                # index at -> 0
@@ -483,7 +483,7 @@ end_if_else:
     # ++col
     lw      $t5, 8($sp)                  # $t0 â†? col
     addi    $t5, $t5, 1                  # $t0 â†? col + 1
-    sw      $t5, 8($sp)                  # ++row
+    sw      $t5, 8($sp)                  # ++col
     # goto rg_begin_loop2
     j       wg_begin_loop2               # goto beginning of inner loop
 wg_end_loop2:
@@ -494,6 +494,6 @@ wg_end_loop2:
     # goto rg_begin_loop1
     j       wg_begin_loop1               # goto beginning of outer loop
 wg_end_loop1:
-	lw 		$ra, 12($sp)
+	lw 		$ra, 12($sp)				 # load the $ra value earlier stored to jump out of write
     addi    $sp, $sp, 16                 # Deallocate stack frame
     jr      $ra                          # Return
