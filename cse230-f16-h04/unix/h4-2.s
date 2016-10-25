@@ -33,6 +33,11 @@
 .eqv NUM_COLS         10  # Number of columns in the 2D grid.
 .eqv NUM_ROWS          8  # Number of rows in the 2D grid.
 
+.eqv MAX_MSG_LEN   80  # Max number of valid chars in a string (excluding newline and null char)
+.eqv BUF_LEN       84  # Number of bytes to allocate for the 'string' array.
+.eqv SYS_RS_MAX    82  # The argument in $a1 when calling SysReadStr
+
+
 #=======================================================================================================
 # DATA SECTION
 #=======================================================================================================
@@ -54,10 +59,10 @@ s_cipher:       .ascii   "Ciphertext: "
 #
 # PSEUDOCODE
 # -- define global constants using the .eqv directive
-# global constant BUF_LEN      ‚Üê 84  -- Size of the array string allocated in main().
-# global constant SYS_RS_MAX   ‚Üê 82  -- Maximum number of chars to read when calling SysReadStr.
-# global constant NUM_COLS     ‚Üê 10  -- Number of columns in the 2D grid.
-# global constant NUM_ROWS     ‚Üê  8  -- Number of rows in the 2D grid.
+# global constant BUF_LEN      ‚Ü? 84  -- Size of the array string allocated in main().
+# global constant SYS_RS_MAX   ‚Ü? 82  -- Maximum number of chars to read when calling SysReadStr.
+# global constant NUM_COLS     ‚Ü? 10  -- Number of columns in the 2D grid.
+# global constant NUM_ROWS     ‚Ü?  8  -- Number of rows in the 2D grid.
 #
 # function main()
 #     local char string[BUF_LEN], grid[NUM_ROWS][NUM_COLS]  -- local vars are allocated in stack frame
@@ -71,28 +76,28 @@ s_cipher:       .ascii   "Ciphertext: "
 #
 # -- Reads the characters from the 2D grid forming the encrypted cipherstring, which is returned.
 # function read_grid(char grid[][], char cipher[])
-#     local int col, index ‚Üê 0, row
-#     for col ‚Üê 0 to NUM_COLS - 1 do
-#         for row ‚Üê 0 to NUM_ROWS - 1 do
+#     local int col, index ‚Ü? 0, row
+#     for col ‚Ü? 0 to NUM_COLS - 1 do
+#         for row ‚Ü? 0 to NUM_ROWS - 1 do
 #             if grid[row][col] ‚â† ' ' then
-#                 cipher[index] ‚Üê grid[row][col]
+#                 cipher[index] ‚Ü? grid[row][col]
 #                 ++index
 #             end if
 #         end for
 #     end for
-#     cipher[index] ‚Üê '\0' -- write the required null char at the end of cipher
+#     cipher[index] ‚Ü? '\0' -- write the required null char at the end of cipher
 # end function read_grid
 #
 # -- Writes the characters of the plaintext message plain into the 2D grid in row-major order.
 # function write_grid(grid, plain)
-#     local int col, index ‚Üê 0, len ‚Üê strlen(plain) - 1, row
-#     for row ‚Üê 0 to NUM_ROWS do
-#         for col ‚Üê 0 to NUM_COLS do
+#     local int col, index ‚Ü? 0, len ‚Ü? strlen(plain) - 1, row
+#     for row ‚Ü? 0 to NUM_ROWS do
+#         for col ‚Ü? 0 to NUM_COLS do
 #             if index < len then
-#                 grid[row][col] ‚Üê plain[index]
+#                 grid[row][col] ‚Ü? plain[index]
 #                 ++index
 #             else
-#                 grid[row][col] ‚Üê ' '
+#                 grid[row][col] ‚Ü? ' '
 #             end if
 #         end for
 #     end for
@@ -120,41 +125,41 @@ main:
     addi    $sp, $sp, -164               # Allocate local vars in stack frame
 
 # SysPrintStr("Enter a string (length <= 80)? ")
-    addi    $v0, $zero, SYS_PRINT_STR    # $v0 ‚Üê SysprintStr service code
-    la      $a0, s_prompt                # $a0 ‚Üê addr of s_prompt
+    addi    $v0, $zero, SYS_PRINT_STR    # $v0 ‚Ü? SysprintStr service code
+    la      $a0, s_prompt                # $a0 ‚Ü? addr of s_prompt
     syscall                              # SysPrintStr("Enter a string (length <= 80)? ")
 
-# string ‚Üê SysReadStr()
-    addi    $v0, $zero, SYS_READ_STR     # $v0 ‚Üê SysReadStr service code
-    move    $a0, $sp                     # $a0 ‚Üê &string (note that array vars are addresses)
-    addi    $a1, $zero, SYS_RS_MAX       # $a1 ‚Üê max num of chars to read
+# string ‚Ü? SysReadStr()
+    addi    $v0, $zero, SYS_READ_STR     # $v0 ‚Ü? SysReadStr service code
+    move    $a0, $sp                     # $a0 ‚Ü? &string (note that array vars are addresses)
+    addi    $a1, $zero, SYS_RS_MAX       # $a1 ‚Ü? max num of chars to read
     syscall                              # SysReadStr(&string, 82) Reads up to 80 chars plus the newline
 
 # write_grid(grid, string)
-    addi    $a0, $sp, BUF_LEN            # $a0 ‚Üê &grid ($a0 contains the address of grid)
-    move    $a1, $sp                     # $a1 ‚Üê &string ($a1 contains the address of string)
+    addi    $a0, $sp, BUF_LEN            # $a0 ‚Ü? &grid ($a0 contains the address of grid)
+    move    $a1, $sp                     # $a1 ‚Ü? &string ($a1 contains the address of string)
     jal     write_grid                   # write_grid(&grid, &string), passes addresses
     
 # read_grid(grid, string)
-    addi    $a0, $sp, BUF_LEN            # $a0 ‚Üê &grid
-    move    $a1, $sp                     # $a1 ‚Üê &string
+    addi    $a0, $sp, BUF_LEN            # $a0 ‚Ü? &grid
+    move    $a1, $sp                     # $a1 ‚Ü? &string
     jal     read_grid                    # read_grid(&grid, &string)    
     
 # SysPrintStr("Ciphertext: ")
-    addi    $v0, $zero, SYS_PRINT_STR    # $v0 ‚Üê SysprintStr service code
+    addi    $v0, $zero, SYS_PRINT_STR    # $v0 ‚Ü? SysprintStr service code
     la      $a0, s_cipher                # $a0 = addr of s_cipher
     syscall                              # SysPrintStr("Ciphertext: ")
 
 # SysPrintStr(string)
-    addi    $v0, $zero, SYS_PRINT_STR    # $a0 ‚Üê SysPrintStr service code
-    move    $a0, $sp                     # $a1 ‚Üê &string
+    addi    $v0, $zero, SYS_PRINT_STR    # $a0 ‚Ü? SysPrintStr service code
+    move    $a0, $sp                     # $a1 ‚Ü? &string
     syscall                              # SysPrintStr(&string)
 
 # Deallocate stack frame
     addi    $sp, $sp, 164                # Deallocate stack frame
 
 # SysExit()
-    addi    $v0, $zero, SYS_EXIT         # $v0 ‚Üê SysExit service code
+    addi    $v0, $zero, SYS_EXIT         # $v0 ‚Ü? SysExit service code
     syscall                              # SysExit()
 
 #-------------------------------------------------------------------------------------------------------
@@ -174,47 +179,47 @@ main:
 #
 # PSEUDOCODE - VERSION 1 - USING FOR LOOPS
 # function read_grid(char grid[][], char cipher[])
-#     local int col, index ‚Üê 0, row
-#     for col ‚Üê 0 to NUM_COLS - 1 do
-#         for row ‚Üê 0 to NUM_ROWS - 1 do
+#     local int col, index ‚Ü? 0, row
+#     for col ‚Ü? 0 to NUM_COLS - 1 do
+#         for row ‚Ü? 0 to NUM_ROWS - 1 do
 #             if grid[row][col] ‚â† ' ' then
-#                 cipher[index] ‚Üê grid[row][col]
+#                 cipher[index] ‚Ü? grid[row][col]
 #                 ++index
 #             end if
 #         end for
 #     end for
-#     cipher[index] ‚Üê '\0'
+#     cipher[index] ‚Ü? '\0'
 # end function read_grid
 #
 # PSEUDOCODE - VERSION 2 - REWRITE FOR LOOPS USING WHILE LOOPS
 # function read_grid(char grid[][], char cipher[])
-#     local int col, index ‚Üê 0, row
-#     col ‚Üê 0
+#     local int col, index ‚Ü? 0, row
+#     col ‚Ü? 0
 #     while col < NUM_COLS do
-#         row ‚Üê 0
+#         row ‚Ü? 0
 #         while row < NUM_ROWS do
 #             if grid[row][col] ‚â† ' ' then
-#                 cipher[index] ‚Üê grid[row][col]
+#                 cipher[index] ‚Ü? grid[row][col]
 #                 ++index
 #             end if
 #             ++row
 #         end while
 #         ++col
 #     end while
-#     cipher[index] ‚Üê '\0'
+#     cipher[index] ‚Ü? '\0'
 # end function read_grid
 #
 # PSEUDOCODE - VERSION 3 - REWRITE WHILE LOOPS USING IF STATEMENTS AND GOTO'S
 # function read_grid(char grid[][], char cipher[])
-#     local int col, index ‚Üê 0, row
-#     col ‚Üê 0
+#     local int col, index ‚Ü? 0, row
+#     col ‚Ü? 0
 #   rg_begin_loop1:
 #     if col ‚â• NUM_COLS then goto rg_end_loop1
-#     row ‚Üê 0
+#     row ‚Ü? 0
 #   rg_begin_loop2:
 #     if row ‚â• NUM_ROWS then goto rg_end_loop2
 #     if grid[row][col] ‚â† ' ' then
-#         cipher[index] ‚Üê grid[row][col]
+#         cipher[index] ‚Ü? grid[row][col]
 #         ++index
 #     end if
 #     ++row
@@ -223,20 +228,20 @@ main:
 #     ++col
 #     goto rg_begin_loop1
 #   rg_end_loop1:
-#     cipher[index] ‚Üê '\0'
+#     cipher[index] ‚Ü? '\0'
 # end function read_grid
 #
 # PSEUDOCODE - VERSION 4 - REWRITE IF-ELSE STATEMENT USING IF STATEMENT AND GOTO'S
 # function read_grid(char grid[][], char cipher[])
-#     local int col, index ‚Üê 0, row
-#     col ‚Üê 0
+#     local int col, index ‚Ü? 0, row
+#     col ‚Ü? 0
 #   rg_begin_loop1:
 #     if col ‚â• NUM_COLS then goto rg_end_loop1
-#     row ‚Üê 0
+#     row ‚Ü? 0
 #   rg_begin_loop2:
 #     if row ‚â• NUM_ROWS then goto rg_end_loop2
 #     if grid[row][col] = ' ' then goto rg_endif
-#     cipher[index] ‚Üê grid[row][col]
+#     cipher[index] ‚Ü? grid[row][col]
 #     ++index
 #   rg_endif:
 #     ++row
@@ -245,7 +250,7 @@ main:
 #     ++col
 #     goto rg_begin_loop1
 #   rg_end_loop1:
-#     cipher[index] ‚Üê '\0'
+#     cipher[index] ‚Ü? '\0'
 # end function read_grid
 #
 # STACK FRAME
@@ -271,58 +276,58 @@ main:
 read_grid:
 # local int col, index, row
     addi    $sp, $sp, -12                # Allocate 3 words in stack frame
-    sw      $zero, 4($sp)                # index ‚Üê 0
+    sw      $zero, 4($sp)                # index ‚Ü? 0
 
 # Load global constants NUM_COLS and NUM_ROWS into registers. We need use these constants in the cond-
 # itional expressions of the loops, but it make sense to only load the values once rather than during
 # each iteration of the loop.
-    addi    $t8, $zero, NUM_COLS         # $t8 ‚Üê NUM_COLS
-    addi    $t9, $zero, NUM_ROWS         # $t9 ‚Üê NUM_ROWS
+    addi    $t8, $zero, NUM_COLS         # $t8 ‚Ü? NUM_COLS
+    addi    $t9, $zero, NUM_ROWS         # $t9 ‚Ü? NUM_ROWS
 
 # We compare grid[row][col] to see if it is a space char in the inner loop. Rather than loading $t7 with
 # the ASCII value of ' ' (32 base 10) each time through the loop, I have optimized this code so we only
 # load $t7 once.
-    addi    $t7, $zero, ' '              # $t7 ‚Üê ' ' (ASCII value 32)
+    addi    $t7, $zero, ' '              # $t7 ‚Ü? ' ' (ASCII value 32)
     
-# col ‚Üê 0
-    sw      $zero, 0($sp)                # col ‚Üê 0
+# col ‚Ü? 0
+    sw      $zero, 0($sp)                # col ‚Ü? 0
 
 rg_begin_loop1:
 # if col ‚â• NUM_COLS then goto rg_end_loop1
-    lw      $t0, 0($sp)                  # $t0 ‚Üê col
+    lw      $t0, 0($sp)                  # $t0 ‚Ü? col
     bge     $t0, $t8, rg_end_loop1       # if col ‚â• NUM_COLS drop out of outer loop
 
-# row ‚Üê 0
-    sw      $zero, 8($sp)                # row ‚Üê 0
+# row ‚Ü? 0
+    sw      $zero, 8($sp)                # row ‚Ü? 0
     
 rg_begin_loop2:
 # if row ‚â• NUM_ROWS then goto rg_end_loop2
-    lw      $t0, 8($sp)                  # $t0 ‚Üê row
+    lw      $t0, 8($sp)                  # $t0 ‚Ü? row
     bge     $t0, $t9, rg_end_loop2       # if row ‚â• NUM_ROWS drop out of outer loop
 
 # if grid[row][col] = ' ' goto rg_endif
-    lw      $t0, 8($sp)                  # $t0 ‚Üê row
-    mul     $t0, $t0, $t8                # $t0 ‚Üê row ¬∑ NUM_COLS
-    lw      $t1, 0($sp)                  # $t1 ‚Üê col
-    add     $t0, $t0, $t1                # $t0 ‚Üê row ¬∑ NUM_COLS + col
-    add     $t0, $a0, $t0                # $t0 ‚Üê grid + row ¬∑ NUM_COLS + col = &grid[row][col]
-    lbu     $t0, 0($t0)                  # $t0[7:0] ‚Üê grid[row][col] (note: LBU loads a byte/char)
+    lw      $t0, 8($sp)                  # $t0 ‚Ü? row
+    mul     $t0, $t0, $t8                # $t0 ‚Ü? row ¬∑ NUM_COLS
+    lw      $t1, 0($sp)                  # $t1 ‚Ü? col
+    add     $t0, $t0, $t1                # $t0 ‚Ü? row ¬∑ NUM_COLS + col
+    add     $t0, $a0, $t0                # $t0 ‚Ü? grid + row ¬∑ NUM_COLS + col = &grid[row][col]
+    lbu     $t0, 0($t0)                  # $t0[7:0] ‚Ü? grid[row][col] (note: LBU loads a byte/char)
     beq     $t0, $t7, rg_endif           # if grid[row][col] = ' ' goto rg_endif
     
-# cipher[index] ‚Üê grid[row][col]
-    lw      $t1, 4($sp)                  # $t1 ‚Üê index
-    add     $t1, $a1, $t1                # $t1 ‚Üê cipher + index = &cipher[index]
-    sb      $t0, 0($t1)                  # cipher[index] ‚Üê grid[row][col]
+# cipher[index] ‚Ü? grid[row][col]
+    lw      $t1, 4($sp)                  # $t1 ‚Ü? index
+    add     $t1, $a1, $t1                # $t1 ‚Ü? cipher + index = &cipher[index]
+    sb      $t0, 0($t1)                  # cipher[index] ‚Ü? grid[row][col]
     
 # ++index
-    lw      $t0, 4($sp)                  # $t0 ‚Üê index
-    addi    $t0, $t0, 1                  # $t0 ‚Üê index + 1
+    lw      $t0, 4($sp)                  # $t0 ‚Ü? index
+    addi    $t0, $t0, 1                  # $t0 ‚Ü? index + 1
     sw      $t0, 4($sp)                  # ++index
 
 rg_endif:
 # ++row
-    lw      $t0, 8($sp)                  # $t0 ‚Üê row
-    addi    $t0, $t0, 1                  # $t0 ‚Üê row + 1
+    lw      $t0, 8($sp)                  # $t0 ‚Ü? row
+    addi    $t0, $t0, 1                  # $t0 ‚Ü? row + 1
     sw      $t0, 8($sp)                  # ++row
     
 # goto rg_begin_loop2
@@ -330,18 +335,18 @@ rg_endif:
 
 rg_end_loop2:
 # ++col
-    lw      $t0, 0($sp)                  # $t0 ‚Üê col
-    addi    $t0, $t0, 1                  # $t0 ‚Üê col + 1
+    lw      $t0, 0($sp)                  # $t0 ‚Ü? col
+    addi    $t0, $t0, 1                  # $t0 ‚Ü? col + 1
     sw      $t0, 0($sp)                  # ++col
 
 # goto rg_begin_loop1
     j       rg_begin_loop1               # goto beginning of outer loop
 
 rg_end_loop1:
-# cipher[index] ‚Üê '\0'
-    lw      $t0, 4($sp)                  # $t0 ‚Üê index
-    add     $t0, $a1, $t0                # $t0 ‚Üê cipher + index = &cipher[index]
-    sb      $zero, 0($t0)                # cipher[index] ‚Üê '\0'
+# cipher[index] ‚Ü? '\0'
+    lw      $t0, 4($sp)                  # $t0 ‚Ü? index
+    add     $t0, $a1, $t0                # $t0 ‚Ü? cipher + index = &cipher[index]
+    sb      $zero, 0($t0)                # cipher[index] ‚Ü? '\0'
 
     addi    $sp, $sp, 12                 # Deallocate stack frame
     jr      $ra                          # Return
@@ -360,7 +365,7 @@ rg_end_loop1:
 #
 # PSEUDOCODE
 # function strlen(char string[])
-#     local int index ‚Üê 0
+#     local int index ‚Ü? 0
 #   begin_loop:
 #     if string[index] = '\0' goto end_loop
 #     ++index
@@ -368,7 +373,38 @@ rg_end_loop1:
 #   end_loop:
 #     return index
 #-------------------------------------------------------------------------------------------------------
-??? COPY-AND-PASTE YOUR CODE FOR STRLEN() FROM EXERCISE 1 HERE ???
+#??? COPY-AND-PASTE YOUR CODE FOR STRLEN() FROM EXERCISE 1 HERE ???
+
+strlen:
+# int len, char string[BUF_LEN]
+    addi    $sp, $sp, -8                 # Allocate local vars in stack frame
+    
+    addi    $t0, $zero, 0		 # int index = 0
+    add     $t1, $zero, $a1		 # string (a1) -> $t1
+    sw      $t0, 0($sp)			 # $sp[0:3] = index
+    addi    $t5, $zero, '\0'		 # $t5 = ASCII value of '\0'
+begin_loop:
+    # if(string[index] != '\0')
+    lw      $t0, 0($sp)			 # $t0 = index (read from local stack) 
+    add     $t2, $t0, $t1		 # $t2 -> &string + index
+    lb      $t3, 0($t2)			 # $t3 -> string[index]
+    beq     $t3, $t5, end_loop
+    #index++
+    addi    $t0, $t0, 1			 # index++
+    #store index
+    sw      $t0, 0($sp)			 # saving index to local stack
+    #jump to begin_loop
+    j       begin_loop			 # jump to start of loop
+end_loop:
+    addi    $t0, $t0, -1    		 # to offset the '\n' from user input
+    add     $v0, $zero, $t0		 # setting up the reurn registers 
+    # Deallocate stack frame
+    addi    $sp, $sp, 8                  # Deallocate stack frame
+    # Return back to calling function
+    jr      $ra
+
+
+
 
 #-------------------------------------------------------------------------------------------------------
 # FUNCTION: void write_grid(char grid[][], char plain[])
@@ -390,14 +426,14 @@ rg_end_loop1:
 #
 # PSEUDOCODE - VERSION 1 - USING FOR LOOPS
 # function write_grid(grid, plain)
-#     local int col, index ‚Üê 0, len ‚Üê strlen(plain) - 1, row
-#     for row ‚Üê 0 to NUM_ROWS do
-#         for col ‚Üê 0 to NUM_COLS do
+#     local int col, index ‚Ü? 0, len ‚Ü? strlen(plain) - 1, row
+#     for row ‚Ü? 0 to NUM_ROWS do
+#         for col ‚Ü? 0 to NUM_COLS do
 #             if index < len then
-#                 grid[row][col] ‚Üê plain[index]
+#                 grid[row][col] ‚Ü? plain[index]
 #                 ++index
 #             else
-#                 grid[row][col] ‚Üê ' '
+#                 grid[row][col] ‚Ü? ' '
 #             end if
 #         end for
 #     end for
@@ -406,4 +442,58 @@ rg_end_loop1:
 # Write the pseudocode Versions 2-4 (Exercises 2.a - 2.c) before you begin writing the assembly language
 # code. You can insert the revised versions here, but also place them in the PDF as requested.
 #-------------------------------------------------------------------------------------------------------
-??? WRITE THE CODE FOR WRITE_GRID() HERE ???
+# ??? WRITE THE CODE FOR WRITE_GRID() HERE ???
+write_grid:
+    addi    $sp, $sp, -16                # Allocate 3 words in stack frame
+    sw 		$ra, 12($sp)
+    # a1 has string and a0 has grid address
+    jal strlen
+    sw      $v0, 0($sp)		# get length of string intp stack
+    lw 		$t3, 0($sp)		# load length into t3 from $v0	
+    sw      $zero, 0($sp)                # index at -> 0
+    addi    $t8, $zero, NUM_COLS         # $t8 ‚Ü? NUM_COLS
+    addi    $t9, $zero, NUM_ROWS         # $t9 ‚Ü? NUM_ROWS    
+    addi    $t7, $zero, ' '             # $t7 ‚Ü? ' ' (ASCII value 32)
+    sw      $zero, 4($sp)                # row ‚Ü? 0
+wg_begin_loop1:
+    lw      $t5, 4($sp)                  # load row value into t0 from $sp
+    bge     $t5, $t9, wg_end_loop1       # if t0 == t9 i.e. num of rows, end loop.
+    sw      $zero, 8($sp)                # col set to 0 from stack
+wg_begin_loop2:
+    lw      $t5, 8($sp)                  # $t0 ‚Ü? row
+    bge     $t5, $t8, wg_end_loop2       # end loop if t0 is equl to col size	
+    lw      $t0, 4($sp)                  # $t0 ‚Ü? row
+    mul     $t0, $t0, $t8                # $t0 ‚Ü? row ¬∑ NUM_COLS
+    lw      $t1, 8($sp)                  # $t1 ‚Ü? col
+    add     $t0, $t0, $t1                # $t0 ‚Ü? row ¬∑ NUM_COLS + col
+    add     $t0, $a0, $t0                # $t0 ‚Ü? grid + row ¬∑ NUM_COLS + col = &grid[row][col]
+    lw      $t1, 0($sp) 				# load index in t0
+    blt     $t1, $t3, store_char           # if index is equal to length
+    sb 		$t7, 0($t0)  	# grid[row][col] = ''
+    b end_if_else
+store_char:
+   	add     $t1, $a1, $t1                # $t1 ‚Ü? cipher + index = &cipher[index]
+    lbu     $t1, 0($t1)                  # load value from index
+    sb      $t1, 0($t0)                  # cipher[index] ‚Ü? grid[row][col]
+end_if_else:
+    # ++index
+    lw      $t0, 0($sp)                  # $t0 ‚Ü? index
+    addi    $t0, $t0, 1                  # $t0 ‚Ü? index + 1
+    sw      $t0, 0($sp)                  # ++index
+    # ++col
+    lw      $t5, 8($sp)                  # $t0 ‚Ü? col
+    addi    $t5, $t5, 1                  # $t0 ‚Ü? col + 1
+    sw      $t5, 8($sp)                  # ++row
+    # goto rg_begin_loop2
+    j       wg_begin_loop2               # goto beginning of inner loop
+wg_end_loop2:
+    # ++row
+    lw      $t5, 4($sp)                  # $t0 ‚Ü? row
+    addi    $t5, $t5, 1                  # $t0 ‚Ü? row + 1
+    sw      $t5, 4($sp)                  # ++row
+    # goto rg_begin_loop1
+    j       wg_begin_loop1               # goto beginning of outer loop
+wg_end_loop1:
+	lw 		$ra, 12($sp)
+    addi    $sp, $sp, 16                 # Deallocate stack frame
+    jr      $ra                          # Return
