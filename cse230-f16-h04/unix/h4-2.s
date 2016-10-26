@@ -8,8 +8,8 @@
 # Encrypts plaintext messages using my lousy 2D grid encryption method.
 #
 # AUTHOR INFO
-# type-your-name (type-your-email-address)
-# type-your-partners-name (type-your-email-address)
+# Mohseen Mukaddam ( mohseen@asu.edu )
+# Vishnu Narang ( vnnarang@asu.edu )
 #*******************************************************************************************************
 
 #=======================================================================================================
@@ -379,25 +379,25 @@ strlen:
 # int len, char string[BUF_LEN]
     addi    $sp, $sp, -8                 # Allocate local vars in stack frame
     
-    addi    $t0, $zero, 0		 # int index = 0
-    add     $t1, $zero, $a1		 # string (a1) -> $t1
-    sw      $t0, 0($sp)			 # $sp[0:3] = index
-    addi    $t5, $zero, '\0'		 # $t5 = ASCII value of '\0'
+    addi    $t0, $zero, 0		         # int index = 0
+    add     $t1, $zero, $a1		         # string (a1) -> $t1
+    sw      $t0, 0($sp)			         # $sp[0:3] = index
+    addi    $t5, $zero, '\0'		     # $t5 = ASCII value of '\0'
 begin_loop:
     # if(string[index] != '\0')
-    lw      $t0, 0($sp)			 # $t0 = index (read from local stack) 
-    add     $t2, $t0, $t1		 # $t2 -> &string + index
-    lb      $t3, 0($t2)			 # $t3 -> string[index]
+    lw      $t0, 0($sp)			         # $t0 = index (read from local stack) 
+    add     $t2, $t0, $t1		         # $t2 -> &string + index
+    lb      $t3, 0($t2)			         # $t3 -> string[index]
     beq     $t3, $t5, end_loop
     #index++
-    addi    $t0, $t0, 1			 # index++
+    addi    $t0, $t0, 1			         # index++
     #store index
-    sw      $t0, 0($sp)			 # saving index to local stack
+    sw      $t0, 0($sp)			         # saving index to local stack
     #jump to begin_loop
-    j       begin_loop			 # jump to start of loop
+    j       begin_loop			         # jump to start of loop
 end_loop:
-    addi    $t0, $t0, -1    		 # to offset the '\n' from user input
-    add     $v0, $zero, $t0		 # setting up the reurn registers 
+    addi    $t0, $t0, -1    		     # to offset the '\n' from user input
+    add     $v0, $zero, $t0		         # setting up the reurn registers 
     # Deallocate stack frame
     addi    $sp, $sp, 8                  # Deallocate stack frame
     # Return back to calling function
@@ -444,56 +444,56 @@ end_loop:
 #-------------------------------------------------------------------------------------------------------
 # ??? WRITE THE CODE FOR WRITE_GRID() HERE ???
 write_grid:
-    addi    $sp, $sp, -16                # Allocate 3 words in stack frame
+    addi    $sp, $sp, -16               # Allocate 3 words in stack frame
     sw 		$ra, 12($sp)				# Store $ra value in stack so that we can call strlen inside without losing return address.
     # a1 has string and a0 has grid address
-    jal strlen		# Find the length of the string entered.
-    sw      $v0, 0($sp)		# get length of string intp stack
-    lw 		$t3, 0($sp)		# load length into t3 from $v0	
-    sw      $zero, 0($sp)                # index at -> 0
-    addi    $t8, $zero, NUM_COLS         # $t8 鈫? NUM_COLS
-    addi    $t9, $zero, NUM_ROWS         # $t9 鈫? NUM_ROWS    
+    jal strlen		                    # Find the length of the string entered.
+    sw      $v0, 0($sp)		            # get length of string intp stack
+    lw 		$t3, 0($sp)		            # load length into t3 from $v0	
+    sw      $zero, 0($sp)               # index at -> 0
+    addi    $t8, $zero, NUM_COLS        # $t8 鈫? NUM_COLS
+    addi    $t9, $zero, NUM_ROWS        # $t9 鈫? NUM_ROWS    
     addi    $t7, $zero, ' '             # $t7 鈫? ' ' (ASCII value 32)
-    sw      $zero, 4($sp)                # row 鈫? 0
+    sw      $zero, 4($sp)               # row 鈫? 0
 wg_begin_loop1:
-    lw      $t5, 4($sp)                  # load row value into t0 from $sp
-    bge     $t5, $t9, wg_end_loop1       # if t0 == t9 i.e. num of rows, end loop.
-    sw      $zero, 8($sp)                # col set to 0 from stack
+    lw      $t5, 4($sp)                 # load row value into t0 from $sp
+    bge     $t5, $t9, wg_end_loop1      # if t0 == t9 i.e. num of rows, end loop.
+    sw      $zero, 8($sp)               # col set to 0 from stack
 wg_begin_loop2:
-    lw      $t5, 8($sp)                  # $t0 鈫? row
-    bge     $t5, $t8, wg_end_loop2       # end loop if t0 is equl to col size	
-    lw      $t0, 4($sp)                  # $t0 鈫? row
-    mul     $t0, $t0, $t8                # $t0 鈫? row 路 NUM_COLS
-    lw      $t1, 8($sp)                  # $t1 鈫? col
-    add     $t0, $t0, $t1                # $t0 鈫? row 路 NUM_COLS + col
-    add     $t0, $a0, $t0                # $t0 鈫? grid + row 路 NUM_COLS + col = &grid[row][col]
+    lw      $t5, 8($sp)                 # $t0 鈫? row
+    bge     $t5, $t8, wg_end_loop2      # end loop if t0 is equl to col size	
+    lw      $t0, 4($sp)                 # $t0 鈫? row
+    mul     $t0, $t0, $t8               # $t0 鈫? row 路 NUM_COLS
+    lw      $t1, 8($sp)                 # $t1 鈫? col
+    add     $t0, $t0, $t1               # $t0 鈫? row 路 NUM_COLS + col
+    add     $t0, $a0, $t0               # $t0 鈫? grid + row 路 NUM_COLS + col = &grid[row][col]
     lw      $t1, 0($sp) 				# load index in t0
-    blt     $t1, $t3, store_char           # if index is equal to length
-    sb 		$t7, 0($t0)  	# grid[row][col] = ''
+    blt     $t1, $t3, store_char        # if index is equal to length
+    sb 		$t7, 0($t0)  	            # grid[row][col] = ''
     b end_if_else
 store_char:
-   	add     $t1, $a1, $t1                # $t1 鈫? cipher + index = &cipher[index]
-    lbu     $t1, 0($t1)                  # load value from index
-    sb      $t1, 0($t0)                  # cipher[index] 鈫? grid[row][col]
+   	add     $t1, $a1, $t1               # $t1 鈫? cipher + index = &cipher[index]
+    lbu     $t1, 0($t1)                 # load value from index
+    sb      $t1, 0($t0)                 # cipher[index] 鈫? grid[row][col]
 end_if_else:
     # ++index
-    lw      $t0, 0($sp)                  # $t0 鈫? index
-    addi    $t0, $t0, 1                  # $t0 鈫? index + 1
-    sw      $t0, 0($sp)                  # ++index
+    lw      $t0, 0($sp)                 # $t0 鈫? index
+    addi    $t0, $t0, 1                 # $t0 鈫? index + 1
+    sw      $t0, 0($sp)                 # ++index
     # ++col
-    lw      $t5, 8($sp)                  # $t0 鈫? col
-    addi    $t5, $t5, 1                  # $t0 鈫? col + 1
-    sw      $t5, 8($sp)                  # ++col
+    lw      $t5, 8($sp)                 # $t0 鈫? col
+    addi    $t5, $t5, 1                 # $t0 鈫? col + 1
+    sw      $t5, 8($sp)                 # ++col
     # goto rg_begin_loop2
-    j       wg_begin_loop2               # goto beginning of inner loop
+    j       wg_begin_loop2              # goto beginning of inner loop
 wg_end_loop2:
     # ++row
-    lw      $t5, 4($sp)                  # $t0 鈫? row
-    addi    $t5, $t5, 1                  # $t0 鈫? row + 1
-    sw      $t5, 4($sp)                  # ++row
+    lw      $t5, 4($sp)                 # $t0 鈫? row
+    addi    $t5, $t5, 1                 # $t0 鈫? row + 1
+    sw      $t5, 4($sp)                 # ++row
     # goto rg_begin_loop1
-    j       wg_begin_loop1               # goto beginning of outer loop
+    j       wg_begin_loop1              # goto beginning of outer loop
 wg_end_loop1:
-	lw 		$ra, 12($sp)				 # load the $ra value earlier stored to jump out of write
-    addi    $sp, $sp, 16                 # Deallocate stack frame
-    jr      $ra                          # Return
+	lw 		$ra, 12($sp)				# load the $ra value earlier stored to jump out of write
+    addi    $sp, $sp, 16                # Deallocate stack frame
+    jr      $ra                         # Return
